@@ -1,5 +1,5 @@
 from tensorflow.keras import Model
-from tensorflow.keras.layers import Conv2D, Conv2DTranspose, GaussianNoise, BatchNormalization
+from tensorflow.keras.layers import Conv2D, Conv2DTranspose, GaussianNoise, BatchNormalization, Dense
 
 import json
 
@@ -17,15 +17,14 @@ class Gen(Model):
                                                     kernel_size = layer['kernel_size'],   
                                                     padding = layer['padding'], 
                                                     strides = layer['strides'], 
-                                                    name = 'e%i'%(i + 1)
+                                                    name = 'g%i'%(i + 1)
                                         )
                                     )
 
     def call(self, inputs):
         x = self.gen_layers[0](inputs)
         for layer in self.gen_layers[1:]
-            x = layer(x)
-        
+            x = layer(x)        
         return x
 
 class Dis(Model):
@@ -35,24 +34,30 @@ class Dis(Model):
         
         self.dis_layers = []
         for i, layer in enumerate(m_config['discriminator']):
-            self.dis_layers.append(Conv2D(  filters = layer['filters'],
-                                            kernel_size = layer['kernel_size'],   
-                                            padding = layer['padding'], 
-                                            strides = layer['strides'], 
-                                            name = 'e%i'%(i + 1)
+            if layer['type'] = 'conv':
+                self.dis_layers.append(Conv2D(  filters = layer['filters'],
+                                                kernel_size = layer['kernel_size'],   
+                                                padding = layer['padding'], 
+                                                strides = layer['strides'], 
+                                                name = 'd%i_c'%(i + 1)
+                                            )
                                         )
-                                    )
+            elif layer['type'] = 'ff':
+                self.dis_layers.append(Dense(   units = layer['units'],
+                                                activation = layer['activation'],
+                                                name = 'd%i_f'%(i + 1)
+                                            )
+                                        )
 
     def call(self, inputs):
         x = self.dis_layers[0](inputs)
         for layer in self.dis_layers[1:]
-            x = layer(x)
-        
+            x = layer(x)        
         return x
 
 
-def gen_loss():
-    return 0 
+def gen_loss(d_x_fake):
+    return tf.reduce_mean(d_x_fake)
 
-def dis_loss():
-    return 0
+def dis_loss(d_x_real, d_x_fake):
+    return tf.reduce_mean(d_x_real - d_x_fake)
