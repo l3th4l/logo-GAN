@@ -1,5 +1,5 @@
 from tensorflow.keras import Model
-from tensorflow.keras.layers import Conv2D, Conv2DTranspose, GaussianNoise, BatchNormalization, Dense
+from tensorflow.keras.layers import Conv2D, Conv2DTranspose, GaussianNoise, BatchNormalization, Dense, Flatten
 
 import json
 
@@ -42,6 +42,10 @@ class Dis(Model):
                                                 name = 'd%i_c'%(i + 1)
                                             )
                                         )
+
+            elif layer['type'] = 'flatten':
+                self.dis_layers.append(Flatten())
+                
             elif layer['type'] = 'ff':
                 self.dis_layers.append(Dense(   units = layer['units'],
                                                 activation = layer['activation'],
